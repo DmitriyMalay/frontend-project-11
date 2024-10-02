@@ -5,6 +5,7 @@ install:
 	npm ci
 
 build:
+	rm -rf dist
 	NODE_ENV=production npx webpack
 
 test:
@@ -12,5 +13,8 @@ test:
 
 lint:
 	npx eslint .
+
+fix:
+	eslint --fix .
 
 .PHONY: test
