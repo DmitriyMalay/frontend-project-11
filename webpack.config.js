@@ -50,7 +50,8 @@ const config = {
     ],
   },
   stats: {
-    warnings: false,
+    warnings: false, // Отключение всех предупреждений
+  },
 };
 
 export default () => {
