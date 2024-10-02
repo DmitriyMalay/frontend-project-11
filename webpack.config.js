@@ -25,8 +25,8 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/i,
-        loader: 'babel-loader',
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+        type: 'asset',
       },
       {
         test: /\.scss$/i,
@@ -37,7 +37,7 @@ const config = {
             loader: 'sass-loader',
             options: {
               sassOptions: {
-                quietDeps: true, // Скрытие предупреждений
+                quietDeps: true,
               },
             },
           },
@@ -50,8 +50,7 @@ const config = {
     ],
   },
   stats: {
-    warnings: false, // Отключение всех предупреждений
-  },
+    warnings: false,
 };
 
 export default () => {
