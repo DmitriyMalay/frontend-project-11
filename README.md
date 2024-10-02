@@ -1,15 +1,7 @@
-# 🚀 Welcome to your new awesome project!
+# RSS feed reader
 
-This project has been created using **webpack-cli**, you can now run
+## Web application for collecting and viewing RSS feed information from various sources.
 
-```
-npm run build
-```
+### Demo:
 
-or
-
-```
-yarn build
-```
-
-to bundle your application
+https://frontend-project-11-lake-phi.vercel.app
