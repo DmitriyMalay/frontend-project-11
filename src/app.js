@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import validator from '../validator.js';
 import axios from 'axios';
 import renderForm from './view/view.js';
+import resources from './locales/index.js';
 
 export default function app() {
 
@@ -9,9 +10,7 @@ export default function app() {
   i18nextInstance.init({
     lng: 'ru',
     debug: false,
-    resources: {
-      ru,
-    },
+    resources,
   });
   
   const state = {
