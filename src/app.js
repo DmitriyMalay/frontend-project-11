@@ -49,6 +49,8 @@ export default function app() {
       .then((validUrl) => {
         watchedState.submitForm.error = '';
         watchedState.submitForm.stateForm = 'processing';
+        console.log(validUrl);
+        console.log(state);
         return axios.get(getProxy(validUrl));
       })
       .catch((error) => {
