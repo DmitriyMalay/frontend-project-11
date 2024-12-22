@@ -1,8 +1,10 @@
 import i18next from 'i18next';
+import validator from '../validator.js';
 import axios from 'axios';
-import validator from './utils/validator.js';
+import renderForm from './view/view.js';
 
 export default function app() {
+
   const i18nextInstance = i18next.createInstance();
   i18nextInstance.init({
     lng: 'ru',
@@ -11,7 +13,7 @@ export default function app() {
       ru,
     },
   });
-
+  
   const state = {
     feeds: [],
     posts: [],
@@ -22,9 +24,22 @@ export default function app() {
     readPosts: [],
   };
 
-  const form = document.querySelector('form');
 
-  form.addEventListener('submit', (e) => {
+  const elementsFeedAndPosts = {
+    form: document.querySelector('form'),
+    inputEl: document.querySelector('#url-input'),
+    buttonAdd: document.querySelector('button[type="submit"]'),
+    feedbackEl: document.querySelector('.feedback'),
+    feedsEl: document.querySelector('.feeds'),
+    postsEl: document.querySelector('.posts'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalBody: document.querySelector('.modal-body'),
+    modalFooter: document.querySelector('.modal-footer'),
+  };
+
+  const watchedState = renderForm(state, elementsFeedAndPosts, i18nextInstance);
+
+  renderForm.addEventListener('submit', (e) => {
     e.preventDefault();
     watchedState.submitForm.stateForm = 'filling';
     const formData = new FormData(e.target);
@@ -41,5 +56,5 @@ export default function app() {
         const errorMessageKey = getMessageError(error);
         watchedState.submitForm.error = errorMessageKey;
       });
-  });
+    });
 }
