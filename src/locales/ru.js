@@ -4,12 +4,12 @@ export default {
       ru: 'Русский',
     },
     form: {
-      succesAdd: 'RSS успешно загружен',
+      succesMessage: 'RSS успешно загружен',
       errors: {
-        urlAlreadyExists: 'RSS уже существует',
-        notBeEmpty: 'Не должно быть пустым',
-        notValid: 'Ссылка должна быть валидным URL',
-        notContainValidRss: 'Ресурс не содержит валидный RSS',
+        notEmpty: 'Не должно быть пустым',
+        invalidLink: 'Ссылка должна быть валидным URL',
+        notRss: 'Ресурс не содержит валидный RSS',
+        addedLink: 'RSS уже существует',
         networkError: 'Ошибка сети',
       },
     },

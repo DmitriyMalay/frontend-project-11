@@ -1,14 +1,19 @@
-import onChange from 'on-change';
 import renderErrors from './renderErrors.js';
+import renderState from './renderState.js';
 
-const renderForm = (state, elements, i18nextInstance) => onChange(state, (path, value) => {
+const renderForm = (state, elements, i18nextInstance) => (path, value) => {
   switch (path) {
-    case 'submitForm.error':
-      renderErrors(value, elements, i18nextInstance);
+    case 'formState':
+      renderState(elements, i18nextInstance, value);
       break;
+    case 'submitForm.error':
+      renderErrors(state, elements, i18nextInstance, value);
+      break;
+
     default:
-      throw new Error('Unknown path');
+      // throw new Error('Unknown path');
+      break;
   }
-});
+};
 
 export default renderForm;
