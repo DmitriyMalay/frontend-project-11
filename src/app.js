@@ -1,8 +1,11 @@
 import * as yup from 'yup';
 import i18next from 'i18next';
 import onChange from 'on-change';
+import axios from 'axios';
+import { uniqueId } from 'lodash';
 import resources from './locales/index.js';
 import renderForm from './view/view.js';
+import parser from './view/parserResponse.js';
 
 const validation = (url, readPosts, i18nextInstance) => {
   const schema = yup.string()
@@ -10,11 +13,45 @@ const validation = (url, readPosts, i18nextInstance) => {
     .required(i18nextInstance.t('form.errors.notEmpty'))
     .url(i18nextInstance.t('form.errors.invalidLink'))
     .notOneOf(readPosts, i18nextInstance.t('form.errors.addedLink'))
-  return schema.validate(url, { abortEarly: false });
+    .validate(url, { abortEarly: false });
+  return schema;
+};
+
+const getResponse = (url) => {
+  const urlProxy = new URL('/get', 'https://allorigins.hexlet.app');
+  urlProxy.searchParams.set('disableCache', 'true');
+  urlProxy.searchParams.set('url', url);
+  const addProxy = urlProxy.toString();
+  return axios.get(addProxy);
+};
+
+const createFeedElement = (parserResult, value) => {
+  const feedTitle = parserResult.titleChannel;
+  const feedDescription = parserResult.descriptionChannel;
+  const feedLink = value;
+  const feedId = uniqueId();
+
+  return {
+    feedTitle,
+    feedDescription,
+    feedLink,
+    feedId,
+  };
+};
+
+const createPostElement = (posts) => {
+  return posts.map(({ title, description, link }) => {
+    const postId = uniqueId();
+    return {
+      title,
+      description,
+      link,
+      postId,
+    };
+  });
 };
 
 export default function app() {
-
   const elements = {
     form: document.querySelector('form'),
     input: document.querySelector('#url-input'),
@@ -61,14 +98,26 @@ export default function app() {
   const handleFormSubmit = (inputValue) => {
     const formSchema = validation(inputValue, watchedState.readPosts, i18nextInstance);
     formSchema
+      .then(() => getResponse(inputValue))
+      .then((response) => {
+        // console.log(response.data.contents)
+        const parserResult = parser(response);
+        console.log(parserResult);
+        const feed = createFeedElement(parserResult.feed, inputValue);
+        console.log(feed);
+        const posts = createPostElement(parserResult.posts);
+        watchedState.feeds.unshift(feed);
+        watchedState.posts = posts.concat(watchedState.posts);
+        console.log(state);
+      })
       .then(() => {
         watchedState.submitForm.error = '';
         watchedState.formState = 'sending';
-        console.log(state);
         watchedState.readPosts.push(inputValue);
       })
       .catch((error) => {
         watchedState.formState = 'invalid';
+        console.log(error.message);
         if (error.message === 'Network Error') {
           watchedState.submitForm.error = i18nextInstance.t('form.errors.networkError');
         } else if (error.message === 'notRss') {
@@ -76,12 +125,12 @@ export default function app() {
         } else {
           watchedState.submitForm.error = error.message;
         }
+
       });
   };
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
-    // const addedLinks = watchedState.feeds.map((feed) => feed.link);
     const formData = new FormData(event.target);
     const data = formData.get('url');
     handleFormSubmit(data);
