@@ -39,16 +39,42 @@ const createFeedElement = (parserResult, value) => {
   };
 };
 
-const createPostElement = (posts) => {
-  return posts.map(({ title, description, link }) => {
-    const postId = uniqueId();
-    return {
-      title,
-      description,
-      link,
-      postId,
-    };
-  });
+const createPostElement = (posts) => posts.map(({ title, description, link }) => {
+  const postId = uniqueId();
+  return {
+    title,
+    description,
+    link,
+    postId,
+  };
+});
+
+const updatePosts = (state, timeout = 5000) => {
+  const { posts, feeds } = state;
+
+  const existingLinks = new Set(posts.map((post) => post.link));
+
+  const feedPromises = feeds.map((feed) => getResponse(feed.feedLink)
+    .then(parser)
+    .then((parseData) => createPostElement(parseData.posts))
+    .catch((error) => {
+      console.error(error.message);
+    }));
+
+  Promise.all(feedPromises)
+    .then((newPosts) => {
+      newPosts.flat().forEach((newPost) => {
+        if (!existingLinks.has(newPost.link)) {
+          state.posts.unshift(newPost);
+        }
+      });
+    })
+    .catch((error) => {
+      console.error(error.message);
+    })
+    .finally(() => {
+      setTimeout(() => updatePosts(state, timeout), timeout);
+    });
 };
 
 export default function app() {
@@ -65,6 +91,7 @@ export default function app() {
   };
 
   const i18nextInstance = i18next.createInstance();
+  
   i18nextInstance.init({
     lng: 'ru',
     debug: false,
@@ -102,18 +129,20 @@ export default function app() {
       .then((response) => {
         // console.log(response.data.contents)
         const parserResult = parser(response);
-        console.log(parserResult);
+        // console.log(parserResult);
         const feed = createFeedElement(parserResult.feed, inputValue);
-        console.log(feed);
+        // console.log(feed);
         const posts = createPostElement(parserResult.posts);
+        console.log(posts);
         watchedState.feeds.unshift(feed);
         watchedState.posts = posts.concat(watchedState.posts);
-        console.log(state);
+        // console.log(state);
       })
       .then(() => {
         watchedState.submitForm.error = '';
         watchedState.formState = 'sending';
         watchedState.readPosts.push(inputValue);
+        updatePosts(watchedState);
       })
       .catch((error) => {
         watchedState.formState = 'invalid';
@@ -125,7 +154,6 @@ export default function app() {
         } else {
           watchedState.submitForm.error = error.message;
         }
-
       });
   };
 

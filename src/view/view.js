@@ -3,6 +3,7 @@ import renderState from './renderState.js';
 
 const renderFeeds = (state, elements, i18nextInstance) => {
   const { feeds } = elements;
+  feeds.textContent = '';
 
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
@@ -39,6 +40,7 @@ const renderFeeds = (state, elements, i18nextInstance) => {
 
 const renderPosts = (state, elements, i18nextInstance) => {
   const { posts } = elements;
+  posts.textContent = '';
 
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
@@ -88,6 +90,7 @@ const renderForm = (state, elements, i18nextInstance) => (path, value) => {
     case 'posts':
       renderPosts(state, elements, i18nextInstance);
       break;
+
     default:
       // throw new Error('Unknown path');
       break;
