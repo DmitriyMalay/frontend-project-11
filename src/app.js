@@ -165,7 +165,6 @@ export default function app() {
     const data = formData.get('url');
     handleFormSubmit(data);
   });
-  
 
   elements.posts.addEventListener('click', (event) => {
     const targetPostId = event.target.dataset.id;
@@ -176,6 +175,4 @@ export default function app() {
       watchedState.clickedPost.push(selectedPost);
     }
   });
-
- 
-};
+}

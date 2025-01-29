@@ -7,6 +7,5 @@ export default function renderState(elements, i18nextInstance, value) {
       break;
     default:
       break;
-      // throw new Error('Unknown form state');
   }
 }

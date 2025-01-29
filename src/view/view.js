@@ -83,19 +83,20 @@ const renderPosts = (state, elements, i18nextInstance) => {
   posts.append(card);
 };
 const renderPostPreview = (elements, posts) => {
-
+  const updatedElements = { ...elements };
   posts.forEach((post) => {
-    const { title, description, link, postId } = post;
-    elements.modalTitle.textContent = title;
-    elements.modalDescription.textContent = description;
-    elements.modalLink.setAttribute('href', link);
+    const {
+      title, description, link, postId,
+    } = post;
+    updatedElements.modalTitle.textContent = title;
+    updatedElements.modalDescription.textContent = description;
+    updatedElements.modalLink.setAttribute('href', link);
 
     const postLinkElement = document.querySelector(`[data-id="${postId}"]`);
     postLinkElement.classList.remove('fw-bold');
     postLinkElement.classList.add('fw-normal', 'text-muted');
   });
 };
-
 
 const renderForm = (state, elements, i18nextInstance) => (path, value) => {
   switch (path) {
@@ -114,9 +115,7 @@ const renderForm = (state, elements, i18nextInstance) => (path, value) => {
     case 'clickedPost':
       renderPostPreview(elements, value);
       break;
-    // case 'activePost':
     default:
-      // throw new Error('Unknown path');
       break;
   }
 };
