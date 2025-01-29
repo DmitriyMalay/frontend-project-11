@@ -12,7 +12,7 @@ const renderFeeds = (state, elements, i18nextInstance) => {
   const h2 = document.createElement('h2');
   h2.classList.add('card-title', 'h4');
   h2.textContent = i18nextInstance.t('feeds.title');
-  // cardBody.append(h2);
+
   cardBody.append(h2);
   card.append(cardBody);
 
@@ -29,8 +29,8 @@ const renderFeeds = (state, elements, i18nextInstance) => {
     const p = document.createElement('p');
     p.classList.add('m-0', 'small', 'text-black-50');
     p.textContent = feed.feedDescription;
-    cardBody.append(ul);
 
+    cardBody.append(ul);
     li.append(h3, p);
     ul.append(li);
   });
@@ -62,11 +62,18 @@ const renderPosts = (state, elements, i18nextInstance) => {
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     const a = document.createElement('a');
     a.classList.add('fw-bold');
+    a.setAttribute('data-id', post.postId);
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
     a.href = post.link;
     a.textContent = post.title;
 
     const button = document.createElement('button');
+    button.type = 'button';
     button.classList.add('btn', 'btn-sm', 'btn-outline-primary');
+    button.setAttribute('data-id', post.postId);
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#modal');
     button.textContent = i18nextInstance.t('posts.buttonText');
 
     li.append(a, button);
@@ -75,6 +82,20 @@ const renderPosts = (state, elements, i18nextInstance) => {
 
   posts.append(card);
 };
+const renderPostPreview = (elements, posts) => {
+
+  posts.forEach((post) => {
+    const { title, description, link, postId } = post;
+    elements.modalTitle.textContent = title;
+    elements.modalDescription.textContent = description;
+    elements.modalLink.setAttribute('href', link);
+
+    const postLinkElement = document.querySelector(`[data-id="${postId}"]`);
+    postLinkElement.classList.remove('fw-bold');
+    postLinkElement.classList.add('fw-normal', 'text-muted');
+  });
+};
+
 
 const renderForm = (state, elements, i18nextInstance) => (path, value) => {
   switch (path) {
@@ -90,7 +111,10 @@ const renderForm = (state, elements, i18nextInstance) => (path, value) => {
     case 'posts':
       renderPosts(state, elements, i18nextInstance);
       break;
-
+    case 'clickedPost':
+      renderPostPreview(elements, value);
+      break;
+    // case 'activePost':
     default:
       // throw new Error('Unknown path');
       break;

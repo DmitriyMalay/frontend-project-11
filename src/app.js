@@ -91,7 +91,7 @@ export default function app() {
   };
 
   const i18nextInstance = i18next.createInstance();
-  
+
   i18nextInstance.init({
     lng: 'ru',
     debug: false,
@@ -118,6 +118,8 @@ export default function app() {
       success: '',
     },
     readPosts: [],
+    activePost: '',
+    clickedPost: [],
   };
 
   const watchedState = onChange(state, renderForm(state, elements, i18nextInstance));
@@ -163,4 +165,17 @@ export default function app() {
     const data = formData.get('url');
     handleFormSubmit(data);
   });
-}
+  
+
+  elements.posts.addEventListener('click', (event) => {
+    const targetPostId = event.target.dataset.id;
+    const selectedPost = watchedState.posts.find((post) => targetPostId === post.postId);
+
+    if (selectedPost) {
+      watchedState.activePost = selectedPost.postId;
+      watchedState.clickedPost.push(selectedPost);
+    }
+  });
+
+ 
+};
