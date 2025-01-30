@@ -6,10 +6,6 @@
 
 [![Actions Status](https://github.com/DmitriyMalay/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/DmitriyMalay/frontend-project-11/actions)
 
-### Codeclimate status:
-
-
-
 ### Demo:
 
 https://frontend-project-11-lake-phi.vercel.app
