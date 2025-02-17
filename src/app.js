@@ -1,11 +1,10 @@
 import * as yup from 'yup';
 import i18next from 'i18next';
-import onChange from 'on-change';
 import axios from 'axios';
 import { uniqueId } from 'lodash';
 import resources from './locales/index.js';
-import renderForm from './view/view.js';
-import parser from './view/parserResponse.js';
+import watch from './view.js';
+import parser from './parserResponse.js';
 
 const validation = (url, readPosts, i18nextInstance) => {
   const schema = yup.string()
@@ -122,33 +121,34 @@ export default function app() {
     clickedPost: [],
   };
 
-  const watchedState = onChange(state, renderForm(state, elements, i18nextInstance));
+  const watchedState = watch(state, elements, i18nextInstance);
 
   const handleFormSubmit = (inputValue) => {
     const formSchema = validation(inputValue, watchedState.readPosts, i18nextInstance);
     formSchema
+      .then(() => {
+        watchedState.formState = 'sending';
+        elements.buttonSend.setAttribute('disabled', true);
+      })
       .then(() => getResponse(inputValue))
       .then((response) => {
-        // console.log(response.data.contents)
+        elements.buttonSend.setAttribute('disabled', true);
         const parserResult = parser(response);
-        // console.log(parserResult);
         const feed = createFeedElement(parserResult.feed, inputValue);
-        // console.log(feed);
         const posts = createPostElement(parserResult.posts);
-        console.log(posts);
         watchedState.feeds.unshift(feed);
         watchedState.posts = posts.concat(watchedState.posts);
-        // console.log(state);
       })
       .then(() => {
         watchedState.submitForm.error = '';
-        watchedState.formState = 'sending';
+        watchedState.formState = 'finished';
+        elements.buttonSend.removeAttribute('disabled');
         watchedState.readPosts.push(inputValue);
         updatePosts(watchedState);
       })
       .catch((error) => {
         watchedState.formState = 'invalid';
-        console.log(error.message);
+        elements.buttonSend.removeAttribute('disabled');
         if (error.message === 'Network Error') {
           watchedState.submitForm.error = i18nextInstance.t('form.errors.networkError');
         } else if (error.message === 'notRss') {
